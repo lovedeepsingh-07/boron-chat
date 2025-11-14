@@ -1,0 +1,7 @@
+Checks: clang-analyzer-*, modernize-*, performance-*, readability-*, bugprone-*, cppcoreguidelines-*, -cppcoreguidelines-owning-memory, -cppcoreguidelines-avoid-magic-numbers, -readability-magic-numbers, -cppcoreguidelines-special-member-functions, -bugprone-suspicious-include, -cppcoreguidelines-no-malloc, -cppcoreguidelines-pro-type-cstyle-cast, -readability-make-member-function-const, -cppcoreguidelines-non-private-member-variables-in-classes, -bugprone-easily-swappable-parameters, -readability-identifier-length, -modernize-use-trailing-return-type, -cppcoreguidelines-pro-type-member-init, -modernize-return-braced-init-list, -modernize-use-designated-initializers, -readability-convert-member-functions-to-static, -cppcoreguidelines-pro-type-vararg, -cppcoreguidelines-pro-bounds-pointer-arithmetic, -readability-function-cognitive-complexity, -readability-named-parameter, -cppcoreguidelines-pro-bounds-array-to-pointer-decay, -readability-avoid-nested-conditional-operator, -modernize-use-std-print
+HeaderFilterRegex: "^(src|include)/.*"
+FormatStyle: file
+WarningsAsErrors: ""
+CheckOptions:
+  - key: modernize-use-nullptr.NullMacros
+    value: 'nullptr'
