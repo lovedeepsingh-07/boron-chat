@@ -1,3 +1,4 @@
+#include "components.hpp"
 #include "scenes.hpp"
 #include <common/common.hpp>
 
@@ -25,4 +26,8 @@ void scenes::game::on_enter(flecs::iter& iter, size_t, components::ActiveScene) 
 
 void scenes::game::on_exit(flecs::iter& iter, size_t, components::ActiveScene) {
     debug::debug("game::on_exit");
+    flecs::world registry = iter.world();
+    if (registry.has<components::global_options::Paused>()) {
+        registry.remove<components::global_options::Paused>();
+    }
 }

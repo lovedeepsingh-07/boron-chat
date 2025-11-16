@@ -9,6 +9,7 @@ void components::setup(flecs::world& registry) {
     registry.component<components::pipelines::Game>().add(flecs::Singleton);
 
     registry.component<components::global_options::GameFonts>().add(flecs::Singleton);
+    registry.component<components::global_options::Paused>().add(flecs::Singleton);
 
     registry.component<components::events::GameQuitEvent>().add(flecs::Singleton);
 

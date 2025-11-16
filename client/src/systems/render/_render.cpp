@@ -52,7 +52,10 @@ void systems::render::setup(flecs::world& registry) {
                 user_interface::main_menu(registry);
             }
             if (registry.has<components::ActiveScene, components::scenes::Game>()) {
-                user_interface::game(registry);
+                user_interface::game::player_interface(registry);
+                if (registry.has<components::global_options::Paused>()) {
+                    user_interface::game::pause_menu(registry);
+                }
             }
             Clay_RenderCommandArray render_commands = Clay_EndLayout();
             Clay_Raylib_Render(render_commands, game_fonts.font_list.data());

@@ -31,6 +31,7 @@ namespace components {
         struct OnRender_Finish {};
     }
     namespace global_options {
+        struct Paused {};
         struct GameFonts {
             std::array<Font, 1> font_list;
         };
