@@ -9,38 +9,23 @@ project("game")
 
 set(EXTERNAL_DIR deps)
 add_subdirectory(${EXTERNAL_DIR}/fmt)
-add_subdirectory(${EXTERNAL_DIR}/flecs)
-# add_subdirectory(${EXTERNAL_DIR}/enet)
 add_subdirectory(net ${CMAKE_BINARY_DIR}/net)
 add_subdirectory(${EXTERNAL_DIR}/raylib)
-set(IMGUI_SOURCES
-    ${EXTERNAL_DIR}/imgui/imgui.cpp
-    ${EXTERNAL_DIR}/imgui/imgui_draw.cpp
-    ${EXTERNAL_DIR}/imgui/imgui_demo.cpp
-    ${EXTERNAL_DIR}/imgui/imgui_tables.cpp
-    ${EXTERNAL_DIR}/imgui/imgui_widgets.cpp
-)
-set(RLIMGUI_SOURCES
-	${EXTERNAL_DIR}/rlimgui/rlImGui.cpp
-)
 
 # ------ game_common ------
 set(COMMON_INCLUDE_FILES
 	common/include
 )
-set(COMMON_SRC_FILES
-	common/src/common.cpp
-)
+file(GLOB_RECURSE COMMON_SRC_FILES common/src/*.cpp)
 add_library(${PROJECT_NAME}_common ${COMMON_SRC_FILES})
 target_link_libraries(${PROJECT_NAME}_common PUBLIC
-	# enet
 	net
 	fmt::fmt
 )
 target_include_directories(${PROJECT_NAME}_common PUBLIC
-	# ${EXTERNAL_DIR}/enet/include
 	${EXTERNAL_DIR}/flatbuffers/include
 	${COMMON_INCLUDE_FILES}
+	${EXTERNAL_DIR}/clay
 )
 
 # ------ game_server ------
@@ -57,17 +42,13 @@ target_include_directories(${PROJECT_NAME}_server PRIVATE
 # ------ game_client ------
 set(CLIENT_INCLUDE_FILES client/include)
 file(GLOB_RECURSE CLIENT_SRC_FILES client/src/*.cpp)
-add_executable(${PROJECT_NAME}_client ${CLIENT_SRC_FILES} ${IMGUI_SOURCES} ${RLIMGUI_SOURCES})
+add_executable(${PROJECT_NAME}_client ${CLIENT_SRC_FILES})
 target_link_libraries(${PROJECT_NAME}_client PRIVATE
 	${PROJECT_NAME}_common
 	raylib
-	flecs::flecs_static
 )
 target_include_directories(${PROJECT_NAME}_client PRIVATE
 	${CLIENT_INCLUDE_FILES}
-	${EXTERNAL_DIR}/clay
-	${EXTERNAL_DIR}/imgui
-	${EXTERNAL_DIR}/rlimgui
 )
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
