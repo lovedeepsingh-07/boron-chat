@@ -1,6 +1,6 @@
-#include <common/layout_engine.hpp>
+#include <common/theme_engine.hpp>
 
-void layout_engine::LayoutEngine::setup() {
+void ThemeEngine::setup() {
     this->add_theme(
         "light",
         Theme{ .colors = { { Color_ID::BACKGROUND, { 246, 230, 238, 255 } },
@@ -35,7 +35,7 @@ void layout_engine::LayoutEngine::setup() {
                            { Color_ID::SIDEBAR_ACCENT_FOREGROUND, { 51, 51, 51, 255 } },
                            { Color_ID::SIDEBAR_BORDER, { 243, 232, 255, 255 } },
                            { Color_ID::SIDEBAR_RING, { 236, 72, 153, 255 } } },
-               .radius = 0.4F }
+               .radius = 6.0F }
     );
 
     this->add_theme(
@@ -72,29 +72,45 @@ void layout_engine::LayoutEngine::setup() {
                            { Color_ID::SIDEBAR_ACCENT_FOREGROUND, { 31, 41, 55, 255 } },
                            { Color_ID::SIDEBAR_BORDER, { 55, 65, 81, 255 } },
                            { Color_ID::SIDEBAR_RING, { 236, 72, 153, 255 } } },
-               .radius = 0.4F }
+               .radius = 6.0F }
     );
 }
 
-void layout_engine::LayoutEngine::add_theme(const std::string& theme_id, Theme theme) {
-    if (m_themes.find(theme_id) != m_themes.end()) {
-        printf("WARN: theme with this ID already exists, doing "
-               "nothing\n");
+void ThemeEngine::add_theme(const std::string& theme_id, Theme theme) {
+    if (this->m_themes.find(theme_id) != this->m_themes.end()) {
+        common::warn("(ThemeEngine::add_theme) theme with this ID already "
+                     "exists, doing nothing");
         return;
     }
     m_themes.emplace(theme_id, theme);
 }
-void layout_engine::LayoutEngine::set_theme(const std::string& theme_id) {
+
+void ThemeEngine::set_curr_theme(const std::string& theme_id) {
+    if (this->m_themes.find(theme_id) == this->m_themes.end()) {
+        common::warn("(ThemeEngine::set_curr_theme) theme with this ID does "
+                     "not exist, doing nothing");
+        return;
+    }
     if (m_curr_theme_id != theme_id) {
         m_curr_theme_id = theme_id;
     }
 }
-std::string layout_engine::LayoutEngine::get_curr_theme() {
+
+const std::string& ThemeEngine::get_curr_theme() {
     return m_curr_theme_id;
 }
-common::Color layout_engine::LayoutEngine::get_color(const Color_ID& color_id) {
+
+common::Color ThemeEngine::get_color(const Color_ID& color_id) {
+    const auto& colors = this->m_themes.at(this->m_curr_theme_id).colors;
+    auto iter = colors.find(color_id);
+    if (iter == colors.end()) {
+        common::warn("(ThemeEngine::get_color) color with this ID does not "
+                     "exist in the current theme, returning FAIL_PURPLE");
+        return common::FAIL_PURPLE;
+    }
     return m_themes.at(m_curr_theme_id).colors.at(color_id);
-};
-float layout_engine::LayoutEngine::get_radius() {
+}
+
+float ThemeEngine::get_radius() {
     return m_themes.at(m_curr_theme_id).radius;
 }

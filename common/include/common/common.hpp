@@ -6,6 +6,7 @@
 #include <fmt/format.h>
 #include <string>
 
+
 namespace common {
     struct Color {
         uint8_t r;
@@ -13,6 +14,8 @@ namespace common {
         uint8_t b;
         uint8_t a;
     };
+    constexpr Color FAIL_PURPLE = common::Color{ 127, 0, 237, 255 };
+
     struct Vector2 {
         float x;
         float y;
@@ -25,4 +28,5 @@ namespace common {
     void info(const std::string& input);
     void warn(const std::string& input);
     void error(const std::string& input);
-};
+
+}

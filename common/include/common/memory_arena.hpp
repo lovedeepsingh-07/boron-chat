@@ -24,9 +24,11 @@ class MemoryArena {
     ~MemoryArena() {
         delete[] this->m_buffer;
     };
-    // disable copying
+    // disable copying and moving
     MemoryArena(const MemoryArena&) = delete;
     MemoryArena& operator=(const MemoryArena&) = delete;
+    MemoryArena(MemoryArena&&) = delete;
+    MemoryArena& operator=(MemoryArena&&) = delete;
 
     void* alloc(size_t alloc_size, size_t alignment = alignof(std::max_align_t));
     char* alloc_string(const std::string& input_string);

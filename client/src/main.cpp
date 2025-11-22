@@ -1,7 +1,8 @@
+#include "layout.hpp"
 #include <array>
 #include <clay_raylib.hpp>
 #include <common/common.hpp>
-#include <common/layout_engine.hpp>
+#include <common/context.hpp>
 
 int main() {
     Clay_Raylib_Initialize(1280, 720, "game", FLAG_WINDOW_RESIZABLE);
@@ -23,14 +24,18 @@ int main() {
     SetTextureFilter(font_list[0].texture, TEXTURE_FILTER_BILINEAR);
     Clay_SetMeasureTextFunction(Raylib_MeasureText, font_list.data());
 
-    // layout engine
-    layout_engine::LayoutEngine layout_engine{};
-    layout_engine.setup();
-    layout_engine.set_theme("dark");
+    // context
+    Context ctx;
+    ctx.setup();
+    ctx.theme_e.set_curr_theme("dark");
+
+    // page engine
+    PageEngine page_e;
+    pages::setup(page_e);
 
     while (!WindowShouldClose()) {
         // clear the frame memory arena at the starting of every frame
-        layout_engine.frame_arena.clear();
+        ctx.frame_arena.clear();
 
         // window state
         Vector2 mouse_pos = GetMousePosition();
@@ -55,77 +60,41 @@ int main() {
                         .padding = { .left = 8, .right = 8, .top = 6, .bottom = 6 },
                         .childAlignment = { .x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER },
                         .layoutDirection = CLAY_TOP_TO_BOTTOM },
-            .backgroundColor =
-                common::to_clay_color(layout_engine.get_color(layout_engine::Color_ID::PRIMARY)),
-            .cornerRadius = CLAY_CORNER_RADIUS(layout_engine.get_radius()),
+            .backgroundColor = common::to_clay_color(ctx.theme_e.get_color(Color_ID::PRIMARY)),
+            .cornerRadius = CLAY_CORNER_RADIUS(ctx.theme_e.get_radius()),
             .floating = { .attachPoints = { .element = CLAY_ATTACH_POINT_RIGHT_TOP,
                                             .parent = CLAY_ATTACH_POINT_RIGHT_TOP },
                           .pointerCaptureMode = CLAY_POINTER_CAPTURE_MODE_CAPTURE,
                           .attachTo = CLAY_ATTACH_TO_ROOT },
-            .border = { .color = common::to_clay_color(layout_engine.get_color(layout_engine::Color_ID::BORDER)),
+            .border = { .color = common::to_clay_color(ctx.theme_e.get_color(Color_ID::BORDER)),
                         .width = { 1, 1, 1, 1, 0 } } }) {
             if (Clay_Hovered() && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                if (layout_engine.get_curr_theme() == "dark") {
-                    layout_engine.set_theme("light");
+                if (ctx.theme_e.get_curr_theme() == "dark") {
+                    ctx.theme_e.set_curr_theme("light");
                 } else {
-                    layout_engine.set_theme("dark");
+                    ctx.theme_e.set_curr_theme("dark");
                 }
             }
             CLAY_TEXT(
                 CLAY_STRING("theme"),
                 CLAY_TEXT_CONFIG(Clay_TextElementConfig{
-                    .textColor = common::to_clay_color(layout_engine.get_color(layout_engine::Color_ID::PRIMARY_FOREGROUND)),
+                    .textColor = common::to_clay_color(ctx.theme_e.get_color(Color_ID::PRIMARY_FOREGROUND)),
                     .fontId = 0,
                     .fontSize = 20,
                 })
             );
         };
 
-        // ------ main container ------
-        CLAY(Clay_ElementDeclaration{
-            .id = CLAY_ID("main_container"),
-            .layout = { .sizing = { .width = CLAY_SIZING_GROW(0), .height = CLAY_SIZING_GROW(0) },
-                        .padding = CLAY_PADDING_ALL(16),
-                        .layoutDirection = CLAY_TOP_TO_BOTTOM },
-            .backgroundColor = common::to_clay_color(
-                layout_engine.get_color(layout_engine::Color_ID::BACKGROUND)
-            ) }) {
-            CLAY(Clay_ElementDeclaration{
-                .layout = { .sizing = { .width = CLAY_SIZING_GROW(0), .height = CLAY_SIZING_FIT(0) },
-                            .childGap = 20,
-                            .layoutDirection = CLAY_LEFT_TO_RIGHT } }) {
-                CLAY(Clay_ElementDeclaration{
-                .layout = { .sizing = { .width = CLAY_SIZING_FIT(80), .height = CLAY_SIZING_FIT(30) },
-                            },.backgroundColor = common::to_clay_color(layout_engine.get_color(layout_engine::Color_ID::CARD)) }) {}
-                CLAY(Clay_ElementDeclaration{
-                .layout = { .sizing = { .width = CLAY_SIZING_FIT(80), .height = CLAY_SIZING_FIT(30) },
-                            },.backgroundColor = common::to_clay_color(layout_engine.get_color(layout_engine::Color_ID::POPOVER)) }) {}
-                CLAY(Clay_ElementDeclaration{
-                .layout = { .sizing = { .width = CLAY_SIZING_FIT(80), .height = CLAY_SIZING_FIT(30) },
-                            },.backgroundColor = common::to_clay_color(layout_engine.get_color(layout_engine::Color_ID::PRIMARY)) }) {}
-                CLAY(Clay_ElementDeclaration{
-                .layout = { .sizing = { .width = CLAY_SIZING_FIT(80), .height = CLAY_SIZING_FIT(30) },
-                            },.backgroundColor = common::to_clay_color(layout_engine.get_color(layout_engine::Color_ID::SECONDARY)) }) {}
-                CLAY(Clay_ElementDeclaration{
-                .layout = { .sizing = { .width = CLAY_SIZING_FIT(80), .height = CLAY_SIZING_FIT(30) },
-                            },.backgroundColor = common::to_clay_color(layout_engine.get_color(layout_engine::Color_ID::MUTED)) }) {}
-                CLAY(Clay_ElementDeclaration{
-                .layout = { .sizing = { .width = CLAY_SIZING_FIT(80), .height = CLAY_SIZING_FIT(30) },
-                            },.backgroundColor = common::to_clay_color(layout_engine.get_color(layout_engine::Color_ID::ACCENT)) }) {}
-                CLAY(Clay_ElementDeclaration{
-                .layout = { .sizing = { .width = CLAY_SIZING_FIT(80), .height = CLAY_SIZING_FIT(30) },
-                            },.backgroundColor = common::to_clay_color(layout_engine.get_color(layout_engine::Color_ID::DESTRUCTIVE)) }) {}
-                CLAY(Clay_ElementDeclaration{
-                .layout = { .sizing = { .width = CLAY_SIZING_FIT(80), .height = CLAY_SIZING_FIT(30) },
-                            },.backgroundColor = common::to_clay_color(layout_engine.get_color(layout_engine::Color_ID::SIDEBAR)) }) {}
-                CLAY(Clay_ElementDeclaration{
-                .layout = { .sizing = { .width = CLAY_SIZING_FIT(80), .height = CLAY_SIZING_FIT(30) },
-                            },.backgroundColor = common::to_clay_color(layout_engine.get_color(layout_engine::Color_ID::SIDEBAR_PRIMARY)) }) {}
-                CLAY(Clay_ElementDeclaration{
-                .layout = { .sizing = { .width = CLAY_SIZING_FIT(80), .height = CLAY_SIZING_FIT(30) },
-                            },.backgroundColor = common::to_clay_color(layout_engine.get_color(layout_engine::Color_ID::SIDEBAR_ACCENT)) }) {}
-            }
+        // ------ render current page ------
+        page_e.render_curr_page(page_e, ctx);
+
+        // TODO: this needs to be removed, not right now, but someday
+        if (IsKeyPressed(KEY_ONE)) {
+            page_e.set_curr_page("debug");
+        } else if (IsKeyPressed(KEY_TWO)) {
+            page_e.set_curr_page("login");
         }
+
         Clay_RenderCommandArray renderCommands = Clay_EndLayout();
 
         BeginDrawing();
