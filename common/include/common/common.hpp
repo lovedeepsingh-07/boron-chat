@@ -8,6 +8,8 @@
 
 
 namespace common {
+    std::string trim_whitespace(const std::string& input);
+
     struct Color {
         uint8_t r;
         uint8_t g;
@@ -15,6 +17,7 @@ namespace common {
         uint8_t a;
     };
     constexpr Color FAIL_PURPLE = common::Color{ 127, 0, 237, 255 };
+    common::Color set_color_alpha(common::Color color, float ratio);
 
     struct Vector2 {
         float x;

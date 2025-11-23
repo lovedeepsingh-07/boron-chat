@@ -36,14 +36,17 @@ void layout::pages::login(Document& doc, Context& ctx) {
                 layout::components::login_input(doc, ctx, "username_input", "Username");
                 layout::components::login_input(doc, ctx, "address_input", "Address");
             }
-            CLAY_TEXT(
-                CLAY_STRING("Login Button"),
-                CLAY_TEXT_CONFIG(Clay_TextElementConfig{
-                    .textColor = common::to_clay_color(ctx.theme_e.get_color(Color_ID::FOREGROUND)),
-                    .fontId = 0,
-                    .fontSize = 48,
-                })
-            );
+            if (layout::components::login_button(doc, ctx, "login_button", "Login")) {
+                auto* username_input =
+                    doc.get_element<elements::Input>("username_input");
+                auto* address_input =
+                    doc.get_element<elements::Input>("address_input");
+                common::info(fmt::format(
+                    "clicked the input button with username: {}, address: {}",
+                    common::trim_whitespace(username_input->value),
+                    common::trim_whitespace(address_input->value)
+                ));
+            };
         }
     }
 }

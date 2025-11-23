@@ -1,6 +1,6 @@
 #include "layout.hpp"
 
-void layout::components::navbar(Context& ctx) {
+void layout::components::navbar(Document& doc, Context& ctx) {
     CLAY(Clay_ElementDeclaration{
         .layout = { .sizing = { .width = CLAY_SIZING_GROW(), .height = CLAY_SIZING_FIT(40) },
                     .padding = { .left = 8, .right = 8, .top = 6, .bottom = 6 },
@@ -12,6 +12,13 @@ void layout::components::navbar(Context& ctx) {
         // ------ filling ------
         CLAY(Clay_ElementDeclaration{
             .layout = { .sizing = { .width = CLAY_SIZING_GROW() } } }) {}
-        layout::components::navbar_button(ctx);
+        // ------ theme button ------
+        if (layout::components::navbar_button(doc, ctx, "theme_button", "theme")) {
+            if (ctx.theme_e.get_curr_theme() == "dark") {
+                ctx.theme_e.set_curr_theme("light");
+            } else {
+                ctx.theme_e.set_curr_theme("dark");
+            }
+        }
     }
 }

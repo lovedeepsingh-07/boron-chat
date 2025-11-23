@@ -1,4 +1,24 @@
 #include "common/common.hpp"
+#include <algorithm>
+
+std::string common::trim_whitespace(const std::string& input) {
+    size_t start = 0;
+    while (start < input.size()
+           && (std::isspace(static_cast<unsigned char>(input[start])) != 0)) {
+        ++start;
+    }
+    size_t end = input.size();
+    while (end > start && (std::isspace(static_cast<unsigned char>(input[end - 1])) != 0)) {
+        --end;
+    }
+    return input.substr(start, end - start);
+}
+
+common::Color common::set_color_alpha(common::Color color, float ratio) {
+    ratio = std::clamp<float>(ratio, 0, 1);
+    color.a = (uint8_t)(255 * ratio);
+    return color;
+}
 
 Clay_Color common::to_clay_color(common::Color input_color) {
     Clay_Color clay_color;

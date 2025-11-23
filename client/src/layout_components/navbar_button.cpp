@@ -1,32 +1,48 @@
 #include "layout.hpp"
 #include <raylib.h>
 
-bool layout::components::navbar_button(Context& ctx) {
+bool layout::components::navbar_button(
+    Document& doc, Context& ctx, const std::string& id, const std::string& button_text
+) {
+    Clay_String button_text_cs = ctx.frame_arena.alloc_clay_string(button_text);
+    Clay_String id_cs = ctx.frame_arena.alloc_clay_string(id);
+    Clay_ElementId button_id = CLAY_SID(id_cs);
+
+    // button state configuration
+    bool button_clicked = false;
+    bool hovering = Clay_PointerOver(button_id);
+    if (hovering && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        button_clicked = true;
+    }
+
+    // color values
+    common::Color button_background_color =
+        ctx.theme_e.get_color(hovering ? Color_ID::ACCENT : Color_ID::BACKGROUND);
+    common::Color button_foreground_color =
+        ctx.theme_e.get_color(hovering ? Color_ID::ACCENT_FOREGROUND : Color_ID::FOREGROUND);
+    common::Color button_border_color = ctx.theme_e.get_color(Color_ID::BORDER);
+    Clay_BorderWidth button_border_width = hovering
+        ? Clay_BorderWidth{ .left = 3, .right = 3, .top = 3, .bottom = 3 }
+        : ctx.theme_e.get_border_width();
+
     CLAY(Clay_ElementDeclaration{
-        .id = CLAY_ID("theme_button"),
-        .layout = { .sizing = { .width = CLAY_SIZING_FIT(92), .height = CLAY_SIZING_FIT(20) },
-                    .padding = { .left = 8, .right = 8, .top = 6, .bottom = 6 },
+        .id = button_id,
+        .layout = { .sizing = { .width = CLAY_SIZING_FIT(120), .height = CLAY_SIZING_FIT(39) },
+                    .padding = { .left = 12, .right = 12, .top = 7, .bottom = 7 },
                     .childAlignment = { .x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER },
                     .layoutDirection = CLAY_TOP_TO_BOTTOM },
-        .backgroundColor = common::to_clay_color(ctx.theme_e.get_color(Color_ID::PRIMARY)),
+        .backgroundColor = common::to_clay_color(button_background_color),
         .cornerRadius = CLAY_CORNER_RADIUS(ctx.theme_e.get_radius()),
-        .border = { .color = common::to_clay_color(ctx.theme_e.get_color(Color_ID::BORDER)),
-                    .width = { 1, 1, 1, 1, 0 } } }) {
-        if (Clay_Hovered() && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-            if (ctx.theme_e.get_curr_theme() == "dark") {
-                ctx.theme_e.set_curr_theme("light");
-            } else {
-                ctx.theme_e.set_curr_theme("dark");
-            }
-        }
+        .border = { .color = common::to_clay_color(button_border_color),
+                    .width = button_border_width } }) {
         CLAY_TEXT(
-            CLAY_STRING("theme"),
+            button_text_cs,
             CLAY_TEXT_CONFIG(Clay_TextElementConfig{
-                .textColor = common::to_clay_color(ctx.theme_e.get_color(Color_ID::PRIMARY_FOREGROUND)),
+                .textColor = common::to_clay_color(button_foreground_color),
                 .fontId = 0,
-                .fontSize = 20,
+                .fontSize = 24,
             })
         );
-    }
-    return false;
+    };
+    return button_clicked;
 }

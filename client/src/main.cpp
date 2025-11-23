@@ -64,7 +64,7 @@ int main() {
         );
 
         Clay_BeginLayout();
-        layout::components::navbar(ctx);
+        layout::components::navbar(doc, ctx);
         CLAY(Clay_ElementDeclaration{
             .id = CLAY_ID("main_container"),
             .layout = { .sizing = { .width = CLAY_SIZING_GROW(0), .height = CLAY_SIZING_GROW(0) },
