@@ -6,13 +6,16 @@ constexpr int min_card_width = 320;
 bool trying_to_connect = false;
 
 void layout::pages::login(Document& doc, Context& ctx) {
+    // attempt a connection to the server
     if (trying_to_connect) {
-        net::update_client((uint64_t)GetFrameTime());
-        if (net::is_client_connected()) {
+        net::client::connect((uint64_t)GetFrameTime());
+        if (net::client::is_connected()) {
             trying_to_connect = false;
             doc.set_curr_page("chat");
         }
+        net::client::send_packets();
     }
+
     CLAY(Clay_ElementDeclaration{
         .layout = { .sizing = { .width = CLAY_SIZING_GROW(), .height = CLAY_SIZING_GROW() },
                     .padding = { .top = 160 },
@@ -46,7 +49,7 @@ void layout::pages::login(Document& doc, Context& ctx) {
                 layout::components::login_input(doc, ctx, "address_input", "Address");
             }
             if (layout::components::login_button(
-                    doc, ctx, "login_button", net::is_client_connecting() ? "Connecting..." : "Login"
+                    doc, ctx, "login_button", net::client::is_connecting() ? "Connecting..." : "Login"
                 )) {
                 std::string username_input = common::trim_whitespace(
                     doc.get_element<elements::Input>("username_input")->value
@@ -57,7 +60,7 @@ void layout::pages::login(Document& doc, Context& ctx) {
                 if (username_input.size() == 0 || address_input.size() == 0) {
                     common::error("username or address cannot be empty");
                 } else {
-                    common::info(fmt::format("clicked the input button with username: {}, address: {}", username_input, address_input)
+                    common::info(fmt::format("login with username: {}, address: {}", username_input, address_input)
                     );
                 }
 

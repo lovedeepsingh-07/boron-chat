@@ -2,10 +2,12 @@
 #include <array>
 #include <clay_raylib.hpp>
 #include <common/common.hpp>
+#include <common/constants.hpp>
 #include <common/context.hpp>
 
 int main() {
     Clay_Raylib_Initialize(540, 750, "game", FLAG_WINDOW_RESIZABLE);
+    SetTargetFPS(constants::TARGET_FPS);
 
     // clay setup
     uint64_t clay_required_memory = Clay_MinMemorySize();
@@ -34,19 +36,21 @@ int main() {
     layout::pages::setup(doc);
 
     // network client setup
-    net::setup_client();
+    net::client::setup();
 
     while (!WindowShouldClose()) {
         // clear the frame memory arena at the starting of every frame
         ctx.frame_arena.clear();
 
         // TODO: some debugging specific code
-        if (IsKeyPressed(KEY_ZERO)) {
-            doc.set_curr_page("debug");
-        } else if (IsKeyPressed(KEY_ONE)) {
-            doc.set_curr_page("login");
-        } else if (IsKeyPressed(KEY_TWO)) {
-            doc.set_curr_page("chat");
+        if (Clay_IsDebugModeEnabled()) {
+            if (IsKeyPressed(KEY_ZERO)) {
+                doc.set_curr_page("debug");
+            } else if (IsKeyPressed(KEY_ONE)) {
+                doc.set_curr_page("login");
+            } else if (IsKeyPressed(KEY_TWO)) {
+                doc.set_curr_page("chat");
+            }
         }
 
         // debugging mode toggle

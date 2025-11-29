@@ -1,7 +1,7 @@
+use crate::{constants, debug};
 use renet;
 use renet_netcode as netcode;
 use std::sync::{Mutex, OnceLock};
-use crate::{constants, debug};
 
 #[allow(non_camel_case_types)]
 struct Server_State {
@@ -10,11 +10,13 @@ struct Server_State {
 }
 static SERVER_STATE: OnceLock<Mutex<Server_State>> = OnceLock::new();
 
-pub fn setup_server() {
+pub fn server_setup(port: u16) {
     let server = renet::RenetServer::new(renet::ConnectionConfig::default());
 
-    let current_time = std::time::SystemTime::now().duration_since(std::time::SystemTime::UNIX_EPOCH).unwrap();
-    let server_address: std::net::SocketAddr = constants::SERVER_ADDRESS.parse().unwrap();
+    let current_time = std::time::SystemTime::now()
+        .duration_since(std::time::SystemTime::UNIX_EPOCH)
+        .unwrap();
+    let server_address: std::net::SocketAddr = format!("127.0.0.1:{}", port).parse().unwrap();
 
     let server_config = netcode::ServerConfig {
         current_time,
@@ -27,65 +29,57 @@ pub fn setup_server() {
     let socket: std::net::UdpSocket = std::net::UdpSocket::bind(server_address).unwrap();
     let transport = netcode::NetcodeServerTransport::new(server_config, socket).unwrap();
 
-    SERVER_STATE.set(Mutex::new(Server_State { server, transport })).ok();
+    SERVER_STATE
+        .set(Mutex::new(Server_State { server, transport }))
+        .ok();
 }
-
-pub fn update_server(delta_time_ms: u64) {
+pub fn server_update(delta_time_ms: u64) {
     let delta_time = std::time::Duration::from_millis(delta_time_ms);
     let mut mutex_gaurd = SERVER_STATE.get().unwrap().lock().unwrap();
     let Server_State { server, transport } = &mut *mutex_gaurd;
 
-    loop {
-        debug::debug("updating server");
-        server.update(delta_time);
-        debug::debug("updating transport");
-        transport.update(delta_time, server).unwrap();
+    server.update(delta_time);
+    transport.update(delta_time, server).unwrap();
 
-        debug::debug("getting server events");
-        while let Some(event) = server.get_event() {
-            match event {
-                renet::ServerEvent::ClientConnected { client_id } => {
-                    debug::info(format!("Client {} connected", client_id).as_str());
-                }
-                renet::ServerEvent::ClientDisconnected { client_id, reason } => {
-                    debug::info(format!("Client {} disconnected, for reason: {:#?}", client_id, reason).as_str());
-                }
+    while let Some(event) = server.get_event() {
+        match event {
+            renet::ServerEvent::ClientConnected { client_id } => {
+                debug::info(format!("Client {} connected", client_id).as_str());
+            }
+            renet::ServerEvent::ClientDisconnected { client_id, reason } => {
+                debug::info(
+                    format!(
+                        "Client {} disconnected, for reason: {:#?}",
+                        client_id, reason
+                    )
+                    .as_str(),
+                );
             }
         }
+    }
 
-        for client_id in server.clients_id() {
-            debug::debug("receiving messages");
-            while let Some(message) =
-                server.receive_message(client_id, renet::DefaultChannel::ReliableOrdered)
-            {
-                debug::info(format!("client_message: {:#?}", String::from_utf8(message.to_vec()).unwrap()).as_str());
-            }
-        }
-
-
-        if server.clients_id().len() > 0 {
-            debug::debug("broadcasting messages");
-            server.broadcast_message(
+    for client_id in server.clients_id() {
+        while let Some(message) =
+            server.receive_message(client_id, renet::DefaultChannel::ReliableOrdered)
+        {
+            let message = String::from_utf8(message.to_vec()).unwrap();
+            debug::info(format!("client {}: {:#?}", client_id, message).as_str());
+            server.broadcast_message_except(
+                client_id,
                 renet::DefaultChannel::ReliableOrdered,
-                "a message from the server",
+                message,
             );
         }
-
-        // let client_id: renet::ClientId = 0;
-        // server.broadcast_message_except(
-        //     client_id,
-        //     renet::DefaultChannel::ReliableOrdered,
-        //     "server message",
-        // );
-        //
-        // server.send_message(client_id, renet::DefaultChannel::ReliableOrdered, "server message");
-
-        debug::debug("sleeping for 3 seconds");
-        std::thread::sleep(std::time::Duration::from_millis(3000));
-
-        debug::debug("sending packets via transport");
-        transport.send_packets(server);
-
-        std::thread::sleep(delta_time);
     }
+    // if server.clients_id().len() > 0 {
+    //     server.broadcast_message(
+    //         renet::DefaultChannel::ReliableOrdered,
+    //         "a message from the server",
+    //     );
+    // }
+}
+pub fn server_send_packets() {
+    let mut mutex_gaurd = SERVER_STATE.get().unwrap().lock().unwrap();
+    let Server_State { server, transport } = &mut *mutex_gaurd;
+    transport.send_packets(server);
 }

@@ -6,6 +6,8 @@ namespace layout {
         void navbar(Document& doc, Context& ctx);
         void login_input(Document& doc, Context& ctx, const std::string& id, const std::string& placeholder);
         bool login_button(Document& doc, Context& ctx, const std::string& id, const std::string& button_text);
+        void message_input(Document& doc, Context& ctx, const std::string& id, const std::string& placeholder);
+        bool send_button(Document& doc, Context& ctx, const std::string& id, const std::string& button_text);
     }
     namespace pages {
         void debug(Document& doc, Context& ctx);
