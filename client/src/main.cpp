@@ -4,9 +4,10 @@
 #include <common/common.hpp>
 #include <common/constants.hpp>
 #include <common/context.hpp>
+#include <net.h>
 
 int main() {
-    Clay_Raylib_Initialize(540, 750, "game", FLAG_WINDOW_RESIZABLE);
+    Clay_Raylib_Initialize(540, 750, "boron", FLAG_WINDOW_RESIZABLE);
     SetTargetFPS(constants::TARGET_FPS);
 
     // clay setup
@@ -90,7 +91,7 @@ int main() {
         EndDrawing();
     }
 
-    // unload the fonts once the game loop exits
+    // unload the fonts once the main loop exits
     for (auto& curr_font : font_list) {
         UnloadFont(curr_font);
     }

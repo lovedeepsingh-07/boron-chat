@@ -1,4 +1,4 @@
-BINARY_NAME := "game"
+BINARY_NAME := "boron"
 TOOLCHAIN_FILE := env_var('PWD') + "/.cmake/mingw-w64-toolchain.cmake"
 export EM_CACHE := env_var('HOME') + '/.cache/emscripten'
 
@@ -10,7 +10,7 @@ setup:
 
 build:
 	@mkdir -p build/windows
-	@cmake -S . -B build/windows -DCMAKE_TOOLCHAIN_FILE={{TOOLCHAIN_FILE}} -DCMAKE_SYSTEM_NAME=Windows
+	@cmake -G Ninja -S . -B build/windows -DCMAKE_TOOLCHAIN_FILE={{TOOLCHAIN_FILE}} -DCMAKE_SYSTEM_NAME=Windows
 	@cmake --build ./build/windows
 	@cp build/windows/compile_commands.json build/compile_commands.json
 

@@ -19,7 +19,7 @@ pub fn client_setup() {
     let current_time = std::time::SystemTime::now()
         .duration_since(std::time::SystemTime::UNIX_EPOCH)
         .unwrap();
-    let server_address: std::net::SocketAddr = constants::SERVER_ADDRESS.parse().unwrap();
+    let server_address: std::net::SocketAddr = "127.0.0.1:9090".parse().unwrap();
 
     let authentication = netcode::ClientAuthentication::Unsecure {
         server_addr: server_address,

@@ -1,5 +1,6 @@
 #include "layout.hpp"
 #include <common/theme_engine.hpp>
+#include <net.h>
 #include <raylib.h>
 
 constexpr int min_card_width = 320;

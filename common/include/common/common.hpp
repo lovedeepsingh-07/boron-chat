@@ -4,9 +4,7 @@
 #include <fmt/base.h>
 #include <fmt/color.h>
 #include <fmt/format.h>
-#include <net.h>
 #include <string>
-
 
 namespace common {
     std::string trim_whitespace(const std::string& input);

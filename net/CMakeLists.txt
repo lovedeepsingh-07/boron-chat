@@ -32,10 +32,11 @@ file(GLOB_RECURSE CARGO_SRC_FILES
 # net source files
 set(NET_CXX "${CMAKE_BINARY_DIR}/net.cpp")
 set(NET_H "${CMAKE_BINARY_DIR}/net.h")
+set(NET_LIB "${CARGO_BUILD_DIR}/${CARGO_PROFILE_DIR}/libnet.a")
 
 # cargo build command
 add_custom_command(
-	OUTPUT ${NET_CXX} ${NET_H}
+	OUTPUT ${NET_CXX} ${NET_H} ${NET_LIB}
 	COMMAND CARGO_TARGET_DIR=${CARGO_BUILD_DIR} RUSTFLAGS="${RUST_FLAGS}" ${CARGO_CMD}
 
 	COMMAND cp ${CARGO_BUILD_DIR}/cxxbridge/net/src/lib.rs.cc ${NET_CXX}
@@ -44,9 +45,6 @@ add_custom_command(
 	DEPENDS ${CARGO_SRC_FILES}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
-
-# cargo static lib
-set(NET_LIB "${CARGO_BUILD_DIR}/${CARGO_PROFILE_DIR}/libnet.a")
 
 # c++ net library
 add_library(net STATIC ${NET_CXX})

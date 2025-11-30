@@ -5,14 +5,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_BUILD_TYPE "Debug")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-project("game")
+project("boron")
 
 set(EXTERNAL_DIR deps)
 add_subdirectory(${EXTERNAL_DIR}/fmt)
 add_subdirectory(net ${CMAKE_BINARY_DIR}/net)
 add_subdirectory(${EXTERNAL_DIR}/raylib)
 
-# ------ game_common ------
+# ------ boron_common ------
 set(COMMON_INCLUDE_FILES
 	common/include
 )
@@ -28,7 +28,7 @@ target_include_directories(${PROJECT_NAME}_common PUBLIC
 	${EXTERNAL_DIR}/clay
 )
 
-# ------ game_server ------
+# ------ boron_server ------
 set(SERVER_INCLUDE_FILES server/include)
 file(GLOB_RECURSE SERVER_SRC_FILES server/src/*.cpp)
 add_executable(${PROJECT_NAME}_server ${SERVER_SRC_FILES})
@@ -39,7 +39,7 @@ target_include_directories(${PROJECT_NAME}_server PRIVATE
 	${SERVER_INCLUDE_FILES}
 )
 
-# ------ game_client ------
+# ------ boron_client ------
 set(CLIENT_INCLUDE_FILES client/include)
 file(GLOB_RECURSE CLIENT_SRC_FILES client/src/*.cpp)
 add_executable(${PROJECT_NAME}_client ${CLIENT_SRC_FILES})

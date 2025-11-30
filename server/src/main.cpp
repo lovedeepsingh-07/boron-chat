@@ -1,6 +1,7 @@
 #include <chrono>
 #include <common/common.hpp>
 #include <common/constants.hpp>
+#include <net.h>
 #include <thread>
 
 constexpr int delta_time = 1 / constants::TARGET_FPS;

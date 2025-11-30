@@ -24,8 +24,7 @@ let
     rev = "b25a31c1a152915cd7dd6796e6592273e5a10aac";
     sha256 = "sha256-6h1aQXqwzPc4oPuid3RfV7W0WzQFUiddjW7OtkKM0P8=";
   };
-in
-{
+in {
   setup_script = ''
     mkdir -p deps
     cp -r ${fmt} deps/fmt
