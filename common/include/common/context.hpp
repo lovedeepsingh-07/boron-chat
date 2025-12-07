@@ -9,6 +9,7 @@
 class Context {
   public:
     MemoryArena frame_arena{ MemoryArena(10240) };
+    MemoryArena message_arena{ MemoryArena(20480) };
     ThemeEngine theme_e;
 
     Context() = default;

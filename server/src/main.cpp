@@ -4,7 +4,7 @@
 #include <net.h>
 #include <thread>
 
-constexpr int delta_time = 1 / constants::TARGET_FPS;
+constexpr int delta_time = 1000 / constants::TARGET_FPS;
 constexpr int port = 9090;
 
 int main() {

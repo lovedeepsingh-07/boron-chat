@@ -40,8 +40,9 @@ int main() {
     net::client::setup();
 
     while (!WindowShouldClose()) {
-        // clear the frame memory arena at the starting of every frame
+        // clear the memory arena(s) at the starting of every frame
         ctx.frame_arena.clear();
+        ctx.message_arena.clear();
 
         // TODO: some debugging specific code
         if (Clay_IsDebugModeEnabled()) {

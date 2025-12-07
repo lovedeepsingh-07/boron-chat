@@ -9,7 +9,8 @@ bool trying_to_connect = false;
 void layout::pages::login(Document& doc, Context& ctx) {
     // attempt a connection to the server
     if (trying_to_connect) {
-        net::client::connect((uint64_t)GetFrameTime());
+        // NOTE: GetFrameTime() returns seconds like "0.016" so we multiply by 1000 to convert into miliseconds
+        net::client::connect((uint64_t)GetFrameTime() * 1000.0F);
         if (net::client::is_connected()) {
             trying_to_connect = false;
             doc.set_curr_page("chat");

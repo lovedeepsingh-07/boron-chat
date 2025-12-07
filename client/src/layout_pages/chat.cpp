@@ -7,7 +7,8 @@ std::vector<std::string> messages;
 
 void layout::pages::chat(Document& doc, Context& ctx) {
     // update client
-    net::client::update((uint64_t)GetFrameTime());
+    // NOTE: GetFrameTime() returns seconds like "0.016" so we multiply by 1000 to convert into miliseconds
+    net::client::update((uint64_t)GetFrameTime() * 1000);
     // poll messages
     for (auto msg : net::client::poll_messages()) {
         messages.emplace_back(std::string(msg.begin(), msg.end()));
@@ -22,7 +23,7 @@ void layout::pages::chat(Document& doc, Context& ctx) {
             .layout = { .sizing = { .width = CLAY_SIZING_GROW(), .height = CLAY_SIZING_GROW() },
                         .layoutDirection = CLAY_TOP_TO_BOTTOM } }) {
             for (auto msg : messages) {
-                Clay_String msg_cs = ctx.frame_arena.alloc_clay_string(msg);
+                Clay_String msg_cs = ctx.message_arena.alloc_clay_string(msg);
                 CLAY_TEXT(
                     msg_cs,
                     CLAY_TEXT_CONFIG(Clay_TextElementConfig{
