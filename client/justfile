@@ -1,0 +1,13 @@
+BINARY_NAME := "boron"
+TOOLCHAIN_FILE := env_var('PWD') + "/.build/mingw-w64-toolchain.cmake"
+
+build:
+	@mkdir -p build/windows
+	@cmake -G Ninja -S . -B build/windows -DCMAKE_TOOLCHAIN_FILE={{TOOLCHAIN_FILE}} -DCMAKE_SYSTEM_NAME=Windows
+	@cmake --build ./build/windows
+	@cp build/windows/compile_commands.json build/compile_commands.json
+
+run: build
+	@./build/windows/boron_client.exe
+runw: build
+	@wine ./build/windows/boron_client.exe

@@ -1,0 +1,8 @@
+build:
+	@cargo build
+
+run: build
+	@./target/x86_64-pc-windows-gnu/debug/boron_server.exe
+
+runw: build
+	@wine ./target/x86_64-pc-windows-gnu/debug/boron_server.exe
