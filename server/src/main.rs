@@ -1,28 +1,35 @@
-use axum::response::IntoResponse;
 use boron_common::debug;
+use std::sync::{Arc, RwLock};
 
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-struct LoginData {
-    client_id: u64,
-    username: String,
-}
-#[axum::debug_handler]
-async fn login_route(
-    axum::extract::Json(login_data): axum::extract::Json<LoginData>,
-) -> impl IntoResponse {
-    println!("{:#?}", login_data);
-    String::from("shit works!").into_response()
-}
+mod command;
+mod game_server;
+mod server_state;
+mod web_server;
+mod error;
 
 #[tokio::main]
 async fn main() {
-    let router = axum::Router::new()
-        .route("/login", axum::routing::post(login_route));
+    let (sendr, recvr) = crossbeam::channel::unbounded::<command::Command>();
+    let state = Arc::new(RwLock::new(server_state::ServerState {
+        sender: sendr,
+        receiver: recvr,
+    }));
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000")
-        .await
-        .unwrap();
+    let game_server_state = state.clone();
+    std::thread::spawn(|| {
+        match game_server::run(game_server_state) {
+            Ok(_) => {},
+            Err(e) => {
+                debug::error(&format!("failed to run the game server, {}", e.to_string()));
+            }
+        };
+    });
 
-    debug::debug("listening to incoming requests on :3000");
-    axum::serve(listener, router).await.unwrap();
+    let web_server_state = state.clone();
+    match web_server::run(web_server_state).await {
+        Ok(_) => {},
+        Err(e) => {
+            debug::error(&format!("failed to run the web server, {}", e.to_string()));
+        }
+    };
 }
