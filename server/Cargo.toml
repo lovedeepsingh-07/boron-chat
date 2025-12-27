@@ -7,7 +7,6 @@ edition = "2024"
 axum = { version = "0.8.7", features = ["macros"] }
 boron_common = { path = "../common" }
 crossbeam = { version = "0.8.4", features = ["crossbeam-channel"] }
-flatbuffers = "25.9.23"
 rand = "0.9.2"
 renet = "1.2.0"
 renet_netcode = "1.2.0"

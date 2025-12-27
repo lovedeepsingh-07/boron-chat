@@ -5,6 +5,8 @@
 #include <net.h>
 #include <raylib.h>
 
+std::vector<std::vector<uint8_t>> packets;
+
 void layout::pages::chat(Document& doc, Context& ctx) {
     // ------ net::update ------
     try {
@@ -15,18 +17,33 @@ void layout::pages::chat(Document& doc, Context& ctx) {
         std::exit(1);
     }
     // ------ net::update ------
+    // ------ net::poll_packets ------
+    try {
+        for (auto curr_packet : net::poll_packets()) {
+            packets.emplace_back(
+                std::vector(curr_packet.data.begin(), curr_packet.data.end())
+            );
+        };
+    } catch (rust::Error e) {
+        auto err = error::Error::from_rust(e);
+        debug::error(fmt::format("Failed to poll packets, {}", err.to_string()));
+        std::exit(1);
+    }
+    // ------ net::poll_packets ------
 
     CLAY(Clay_ElementDeclaration{
         .layout = { .sizing = { .width = CLAY_SIZING_GROW(), .height = CLAY_SIZING_GROW() },
                     .childAlignment = { .x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_TOP },
                     .layoutDirection = CLAY_TOP_TO_BOTTOM } }) {
-        // ------ message list ------
+        // ------ render_chat ------
         CLAY(Clay_ElementDeclaration{
             .layout = { .sizing = { .width = CLAY_SIZING_GROW(160, 1000), .height = CLAY_SIZING_GROW() },
                         .padding = { .bottom = 24 },
                         .childGap = 16,
                         .layoutDirection = CLAY_TOP_TO_BOTTOM },
-            .clip = { .vertical = true, .childOffset = Clay_GetScrollOffset() } }) {}
+            .clip = { .vertical = true, .childOffset = Clay_GetScrollOffset() } }) {
+            layout::components::render_chat(doc, ctx, packets);
+        }
         CLAY(Clay_ElementDeclaration{
             .layout = { .sizing = { .width = CLAY_SIZING_GROW(), .height = CLAY_SIZING_FIT() },
                         .padding = { .top = 20 },

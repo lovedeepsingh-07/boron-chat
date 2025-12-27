@@ -26,10 +26,10 @@ let
   };
 in {
   setup_script = ''
-    mkdir -p client/deps/clay
-    cp -r ${fmt} client/deps/fmt
-    cp -r ${raylib} client/deps/raylib
-    cp -r ${clay} client/deps/clay/clay
-    cp -r ${flatbuffers} client/deps/flatbuffers
+    mkdir -p deps/clay
+    cp -r ${fmt} deps/fmt
+    cp -r ${raylib} deps/raylib
+    cp -r ${clay} deps/clay/clay
+    cp -r ${flatbuffers} deps/flatbuffers
   '';
 }

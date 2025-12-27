@@ -118,6 +118,7 @@ name = "boron_common"
 version = "0.1.0"
 dependencies = [
  "blake3",
+ "flatbuffers",
 ]
 
 [[package]]
@@ -127,7 +128,6 @@ dependencies = [
  "axum",
  "boron_common",
  "crossbeam",
- "flatbuffers",
  "rand",
  "renet",
  "renet_netcode",

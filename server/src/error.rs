@@ -1,4 +1,5 @@
 use renet_netcode as netcode;
+use boron_common::flatbuffers;
 
 pub enum Error {
     ChannelSendError(String),
@@ -8,6 +9,9 @@ pub enum Error {
     SystemTimeError(String),
     ParseError(String),
     ConnectTokenError(String),
+    FlatbufferError(String),
+    TransportError(String),
+    StateError(String),
 }
 
 impl std::string::ToString for Error {
@@ -20,6 +24,9 @@ impl std::string::ToString for Error {
             Error::SystemTimeError(err_str) => format!("SystemTimeError {}", err_str),
             Error::ParseError(err_str) => format!("ParseError {}", err_str),
             Error::ConnectTokenError(err_str) => format!("ConnectTokenError {}", err_str),
+            Error::FlatbufferError(err_str) => format!("FlatbufferError {}", err_str),
+            Error::TransportError(err_str) => format!("TransportError {}", err_str),
+            Error::StateError(err_str) => format!("StateError {}", err_str),
         }
     }
 }
@@ -57,5 +64,10 @@ impl From<std::net::AddrParseError> for Error {
 impl From<netcode::TokenGenerationError> for Error {
     fn from(value: netcode::TokenGenerationError) -> Self {
         Error::ConnectTokenError(value.to_string())
+    }
+}
+impl From<flatbuffers::InvalidFlatbuffer> for Error {
+    fn from(error: flatbuffers::InvalidFlatbuffer) -> Self {
+        Error::FlatbufferError(error.to_string())
     }
 }

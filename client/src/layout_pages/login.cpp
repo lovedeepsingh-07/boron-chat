@@ -21,6 +21,7 @@ void layout::pages::login(Document& doc, Context& ctx) {
                 // ------ net::reset_client() ------
                 try {
                     net::reset_client();
+                    trying_to_connect = false;
                 } catch (rust::Error e) {
                     auto err = error::Error::from_rust(e);
                     debug::error(fmt::format("Failed to reset the client state, {}", err.to_string()));
