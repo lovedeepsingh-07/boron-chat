@@ -16,11 +16,11 @@ bool layout::components::navbar_button(
     }
 
     // color values
-    common::Color button_background_color =
+    app_utils::Color button_background_color =
         ctx.theme_e.get_color(hovering ? Color_ID::ACCENT : Color_ID::BACKGROUND);
-    common::Color button_foreground_color =
+    app_utils::Color button_foreground_color =
         ctx.theme_e.get_color(hovering ? Color_ID::ACCENT_FOREGROUND : Color_ID::FOREGROUND);
-    common::Color button_border_color = ctx.theme_e.get_color(Color_ID::BORDER);
+    app_utils::Color button_border_color = ctx.theme_e.get_color(Color_ID::BORDER);
     Clay_BorderWidth button_border_width = hovering
         ? Clay_BorderWidth{ .left = 3, .right = 3, .top = 3, .bottom = 3 }
         : ctx.theme_e.get_border_width();
@@ -31,14 +31,14 @@ bool layout::components::navbar_button(
                     .padding = { .left = 12, .right = 12, .top = 7, .bottom = 7 },
                     .childAlignment = { .x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER },
                     .layoutDirection = CLAY_TOP_TO_BOTTOM },
-        .backgroundColor = common::to_clay_color(button_background_color),
+        .backgroundColor = app_utils::to_clay_color(button_background_color),
         .cornerRadius = CLAY_CORNER_RADIUS(ctx.theme_e.get_radius()),
-        .border = { .color = common::to_clay_color(button_border_color),
+        .border = { .color = app_utils::to_clay_color(button_border_color),
                     .width = button_border_width } }) {
         CLAY_TEXT(
             button_text_cs,
             CLAY_TEXT_CONFIG(Clay_TextElementConfig{
-                .textColor = common::to_clay_color(button_foreground_color),
+                .textColor = app_utils::to_clay_color(button_foreground_color),
                 .fontId = 0,
                 .fontSize = 24,
             })

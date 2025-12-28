@@ -5,7 +5,7 @@ void layout::components::chat_event(Document& doc, Context& ctx, const std::stri
     Clay_String body_cs = ctx.message_arena.alloc_clay_string(body);
 
     // color values
-    common::Color foreground_color = ctx.theme_e.get_color(Color_ID::MUTED_FOREGROUND);
+    app_utils::Color foreground_color = ctx.theme_e.get_color(Color_ID::MUTED_FOREGROUND);
 
     CLAY(Clay_ElementDeclaration{
         .layout = { .sizing = { .width = CLAY_SIZING_GROW(), .height = CLAY_SIZING_FIT() },
@@ -13,7 +13,7 @@ void layout::components::chat_event(Document& doc, Context& ctx, const std::stri
         CLAY_TEXT(
             body_cs,
             CLAY_TEXT_CONFIG(Clay_TextElementConfig{
-                .textColor = common::to_clay_color(foreground_color),
+                .textColor = app_utils::to_clay_color(foreground_color),
                 .fontId = 0,
                 .fontSize = 24,
             })

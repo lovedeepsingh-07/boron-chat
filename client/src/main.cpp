@@ -1,12 +1,16 @@
+#include "app_utils.hpp"
+#include "constants.hpp"
+#include "context.hpp"
+#include "debug.hpp"
+#include "error.hpp"
 #include "layout.hpp"
 #include <array>
 #include <clay_raylib.hpp>
-#include <common/common.hpp>
-#include <common/constants.hpp>
-#include <common/context.hpp>
+#include <net.h>
 
 int main() {
-    Clay_Raylib_Initialize(540, 750, "boron", FLAG_WINDOW_RESIZABLE);
+    SetTraceLogLevel(LOG_ERROR);
+    Clay_Raylib_Initialize(540, 750, "boron", FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_HIGHDPI);
     SetTargetFPS(constants::TARGET_FPS);
 
     // clay setup
@@ -17,7 +21,7 @@ int main() {
         clay_memory,
         (Clay_Dimensions){ .width = (float)GetScreenWidth(),
                            .height = (float)GetScreenHeight() },
-        (Clay_ErrorHandler){ common::clay_error_handler }
+        (Clay_ErrorHandler){ app_utils::clay_error_handler }
     );
 
     // font setup
@@ -78,7 +82,7 @@ int main() {
                         .padding = { .left = 16, .right = 16, .top = 60, .bottom = 16 },
                         .layoutDirection = CLAY_TOP_TO_BOTTOM },
             .backgroundColor =
-                common::to_clay_color(ctx.theme_e.get_color(Color_ID::BACKGROUND)) }) {
+                app_utils::to_clay_color(ctx.theme_e.get_color(Color_ID::BACKGROUND)) }) {
             doc.render_curr_page(doc, ctx);
         }
         Clay_RenderCommandArray renderCommands = Clay_EndLayout();
@@ -92,5 +96,17 @@ int main() {
     for (auto& curr_font : font_list) {
         UnloadFont(curr_font);
     }
+
+    // ------ net::disconnect_client ------
+    try {
+        net::disconnect_client();
+        net::update_client((uint64_t)GetFrameTime() * 1000);
+        net::send_packets();
+    } catch (rust::Error e) {
+        auto err = error::Error::from_rust(e);
+        debug::error(fmt::format("Failed to disconnect the client, {}", err.to_string()));
+    }
+    // ------ net::disconnect_client ------
+
     return 0;
 }

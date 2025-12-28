@@ -26,10 +26,9 @@ let
   };
 in {
   setup_script = ''
-    mkdir -p deps
+    mkdir -p deps/clay
     cp -r ${fmt} deps/fmt
     cp -r ${raylib} deps/raylib
-    mkdir -p deps/clay
     cp -r ${clay} deps/clay/clay
     cp -r ${flatbuffers} deps/flatbuffers
   '';

@@ -4,7 +4,7 @@
     nixpkgs.url =
       "github:nixos/nixpkgs/d2ed99647a4b195f0bcc440f76edfa10aeb3b743";
     rust-overlay = {
-      url = "github:oxalica/rust-overlay";
+      url = "github:oxalica/rust-overlay/a9c35d6e7cb70c5719170b6c2d3bb589c5e048af";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     flake-utils.url =
@@ -29,7 +29,7 @@
         formatter = pkgs.nixfmt-classic;
         devShells.default = cross-pkgs.mkShell {
           nativeBuildInputs =
-            [ pkgs.ninja pkgs.cmake rust-pkg pkgs.pkg-config pkgs.flatbuffers ];
+            [ pkgs.ninja pkgs.cmake rust-pkg pkgs.pkg-config pkgs.flatbuffers pkgs.htop ];
           buildInputs = [ cross-pkgs.windows.pthreads ];
           shellHook = "zsh";
         };

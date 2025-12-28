@@ -40,10 +40,10 @@ void layout::components::login_input(
     auto input_value_cs = ctx.frame_arena.alloc_clay_string(element_ctx->value);
 
     // color values
-    common::Color input_placeholder_color =
+    app_utils::Color input_placeholder_color =
         ctx.theme_e.get_color(Color_ID::MUTED_FOREGROUND);
-    common::Color input_foreground_color = ctx.theme_e.get_color(Color_ID::FOREGROUND);
-    common::Color input_border_color =
+    app_utils::Color input_foreground_color = ctx.theme_e.get_color(Color_ID::FOREGROUND);
+    app_utils::Color input_border_color =
         ctx.theme_e.get_color(element_ctx->focused ? Color_ID::RING : Color_ID::BORDER);
     Clay_BorderWidth input_border_width = element_ctx->focused
         ? Clay_BorderWidth{ .left = 3, .right = 3, .top = 3, .bottom = 3 }
@@ -57,13 +57,13 @@ void layout::components::login_input(
                     .layoutDirection = CLAY_TOP_TO_BOTTOM },
         .cornerRadius = CLAY_CORNER_RADIUS(ctx.theme_e.get_radius()),
         .clip = { .horizontal = true },
-        .border = { .color = common::to_clay_color(input_border_color),
+        .border = { .color = app_utils::to_clay_color(input_border_color),
                     .width = input_border_width } }) {
         if (element_ctx->value.empty()) {
             CLAY_TEXT(
                 placeholder_cs,
                 CLAY_TEXT_CONFIG(Clay_TextElementConfig{
-                    .textColor = common::to_clay_color(input_placeholder_color),
+                    .textColor = app_utils::to_clay_color(input_placeholder_color),
                     .fontId = 0,
                     .fontSize = 24,
                 })
@@ -72,7 +72,7 @@ void layout::components::login_input(
             CLAY_TEXT(
                 input_value_cs,
                 CLAY_TEXT_CONFIG(Clay_TextElementConfig{
-                    .textColor = common::to_clay_color(input_foreground_color),
+                    .textColor = app_utils::to_clay_color(input_foreground_color),
                     .fontId = 0,
                     .fontSize = 24,
                 })

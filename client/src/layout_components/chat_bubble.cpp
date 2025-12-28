@@ -10,11 +10,11 @@ void layout::components::chat_bubble(
     Clay_String body_cs = ctx.message_arena.alloc_clay_string(body);
 
     // color values
-    common::Color background_color = ctx.theme_e.get_color(Color_ID::CARD);
-    common::Color border_color = ctx.theme_e.get_color(Color_ID::BORDER);
-    common::Color username_foreground_color =
+    app_utils::Color background_color = ctx.theme_e.get_color(Color_ID::CARD);
+    app_utils::Color border_color = ctx.theme_e.get_color(Color_ID::BORDER);
+    app_utils::Color username_foreground_color =
         ctx.theme_e.get_color(Color_ID::MUTED_FOREGROUND);
-    common::Color body_foreground_color = ctx.theme_e.get_color(Color_ID::FOREGROUND);
+    app_utils::Color body_foreground_color = ctx.theme_e.get_color(Color_ID::FOREGROUND);
 
     CLAY(Clay_ElementDeclaration{
         .layout = { .sizing = { .width = CLAY_SIZING_GROW(), .height = CLAY_SIZING_FIT() } } }) {
@@ -29,9 +29,9 @@ void layout::components::chat_bubble(
                         .childGap = 2,
                         .childAlignment = { .x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_TOP },
                         .layoutDirection = CLAY_TOP_TO_BOTTOM },
-            .backgroundColor = common::to_clay_color(background_color),
+            .backgroundColor = app_utils::to_clay_color(background_color),
             .cornerRadius = CLAY_CORNER_RADIUS(ctx.theme_e.get_radius()),
-            .border = { .color = common::to_clay_color(border_color),
+            .border = { .color = app_utils::to_clay_color(border_color),
                         .width = ctx.theme_e.get_border_width() } }) {
             CLAY(Clay_ElementDeclaration{
                 .layout = { .sizing = { .width = CLAY_SIZING_GROW(),
@@ -43,7 +43,7 @@ void layout::components::chat_bubble(
                 CLAY_TEXT(
                     username_cs,
                     CLAY_TEXT_CONFIG(Clay_TextElementConfig{
-                        .textColor = common::to_clay_color(username_foreground_color),
+                        .textColor = app_utils::to_clay_color(username_foreground_color),
                         .fontId = 0,
                         .fontSize = 24,
                     })
@@ -59,7 +59,7 @@ void layout::components::chat_bubble(
                 CLAY_TEXT(
                     body_cs,
                     CLAY_TEXT_CONFIG(Clay_TextElementConfig{
-                        .textColor = common::to_clay_color(body_foreground_color),
+                        .textColor = app_utils::to_clay_color(body_foreground_color),
                         .fontId = 0,
                         .fontSize = 24,
                     })

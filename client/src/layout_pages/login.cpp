@@ -1,41 +1,51 @@
+#include "debug.hpp"
+#include "error.hpp"
 #include "layout.hpp"
-#include <common/error.hpp>
-#include <common/theme_engine.hpp>
+#include "theme_engine.hpp"
 #include <net.h>
 #include <raylib.h>
-#include <rust/cxx.h>
 
 constexpr int min_card_width = 320;
 bool trying_to_connect = false;
 
 void layout::pages::login(Document& doc, Context& ctx) {
-    // attempt a connection to the server
     if (trying_to_connect) {
-        // NOTE: GetFrameTime() returns seconds like "0.016" so we multiply by 1000 to convert into miliseconds
+        // ------ net::connect_client() ------
         try {
-            net::client::connect((uint64_t)GetFrameTime() * 1000.0F);
+            net::connect_client((uint64_t)GetFrameTime() * 1000.0F);
         } catch (rust::Error e) {
-            common::error(fmt::format(
-                "failed to connect to the server, {}",
-                error::Error::from_rust(e).to_string()
-            ));
-            std::exit(1);
+            auto err = error::Error::from_rust(e);
+            if (err.kind == error::Error::Kind::AuthError) {
+                debug::error(fmt::format("Failed to connect to the server, {}", err.to_string()));
+                debug::info("Try using a different username");
+                // ------ net::reset_client() ------
+                try {
+                    net::reset_client();
+                    trying_to_connect = false;
+                } catch (rust::Error e) {
+                    auto err = error::Error::from_rust(e);
+                    debug::error(fmt::format("Failed to reset the client state, {}", err.to_string()));
+                }
+                // ------ net::reset_client() ------
+            }
         }
-        if (net::client::is_connected()) {
+        // ------ net::connect_client() ------
+        if (net::is_client_connected()) {
             trying_to_connect = false;
             doc.set_curr_page("chat");
         }
+        // ------ net::send_packets() ------
         try {
-            net::client::send_packets();
+            net::send_packets();
         } catch (rust::Error e) {
-            common::error(fmt::format(
-                "failed to send packets to the server, {}",
-                error::Error::from_rust(e).to_string()
-            ));
-            std::exit(1);
+            auto err = error::Error::from_rust(e);
+            if (err.kind != error::Error::Kind::StateNotInitializedError) {
+                debug::error(fmt::format("Failed to send packets to the server, {}", err.to_string()));
+                std::exit(1);
+            }
         }
+        // ------ net::send_packets() ------
     }
-
     CLAY(Clay_ElementDeclaration{
         .layout = { .sizing = { .width = CLAY_SIZING_GROW(), .height = CLAY_SIZING_GROW() },
                     .padding = { .top = 160 },
@@ -48,14 +58,14 @@ void layout::pages::login(Document& doc, Context& ctx) {
                         .childGap = 20,
                         .childAlignment = { .x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_TOP },
                         .layoutDirection = CLAY_TOP_TO_BOTTOM },
-            .backgroundColor = common::to_clay_color(ctx.theme_e.get_color(Color_ID::CARD)),
+            .backgroundColor = app_utils::to_clay_color(ctx.theme_e.get_color(Color_ID::CARD)),
             .cornerRadius = CLAY_CORNER_RADIUS(ctx.theme_e.get_radius()),
-            .border = { .color = common::to_clay_color(ctx.theme_e.get_color(Color_ID::BORDER)),
+            .border = { .color = app_utils::to_clay_color(ctx.theme_e.get_color(Color_ID::BORDER)),
                         .width = ctx.theme_e.get_border_width() } }) {
             CLAY_TEXT(
                 CLAY_STRING("Login"),
                 CLAY_TEXT_CONFIG(Clay_TextElementConfig{
-                    .textColor = common::to_clay_color(ctx.theme_e.get_color(Color_ID::FOREGROUND)),
+                    .textColor = app_utils::to_clay_color(ctx.theme_e.get_color(Color_ID::FOREGROUND)),
                     .fontId = 0,
                     .fontSize = 48,
                 })
@@ -66,30 +76,26 @@ void layout::pages::login(Document& doc, Context& ctx) {
                             .childAlignment = { .x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_TOP },
                             .layoutDirection = CLAY_TOP_TO_BOTTOM } }) {
                 layout::components::login_input(doc, ctx, "username_input", "Username");
-                layout::components::login_input(doc, ctx, "address_input", "Address");
             }
-            if (layout::components::login_button(
-                    doc, ctx, "login_button", net::client::is_connecting() ? "Connecting..." : "Login"
-                )
+            if (layout::components::login_button(doc, ctx, "login_button", net::is_client_connecting() ? "Connecting..." : "Login")
                 && !trying_to_connect) {
-                std::string username_input = common::trim_whitespace(
+                std::string username_input = app_utils::trim_whitespace(
                     doc.get_element<elements::Input>("username_input")->value
                 );
-                std::string address_input = common::trim_whitespace(
-                    doc.get_element<elements::Input>("address_input")->value
-                );
-                if (username_input.size() == 0 || address_input.size() == 0) {
-                    common::error("username or address cannot be empty");
+                if (username_input.size() < 8) {
+                    debug::error("Username should be atleast 8 characters long");
                 } else {
+                    // ------ net::setup_client() ------
                     try {
-                        net::client::setup(username_input, address_input);
+                        net::setup_client(username_input);
                     } catch (rust::Error e) {
-                        common::error(fmt::format(
-                            "failed to setup the client, {}",
-                            error::Error::from_rust(e).to_string()
-                        ));
-                        std::exit(1);
+                        auto err = error::Error::from_rust(e);
+                        if (err.kind != error::Error::Kind::StateAlreadyInitializedError) {
+                            debug::error(fmt::format("Failed to setup the client, {}", err.to_string()));
+                            std::exit(1);
+                        }
                     }
+                    // ------ net::setup_client() ------
                     trying_to_connect = true;
                 }
             };
