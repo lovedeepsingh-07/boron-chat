@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.15)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_BUILD_TYPE "Release")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project("boron")
@@ -20,8 +19,16 @@ if (${NIX_BUILD})
 	  INTERFACE_INCLUDE_DIRECTORIES ${RUNTIME_INCLUDE_DIR}
 	)
 	target_sources(runtime INTERFACE ${RUNTIME_SRC})
+	if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+		target_link_libraries(runtime INTERFACE
+			ws2_32
+			userenv
+			advapi32
+			bcrypt
+		)
+	endif()
 else()
-	add_subdirectory(runtime ${CMAKE_BINARY_DIR}/runtime)
+	add_subdirectory(../boron_rust/client_runtime ${CMAKE_BINARY_DIR}/runtime)
 endif()
 
 set(INCLUDE_FILES include)

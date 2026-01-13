@@ -1,6 +1,11 @@
-{pkgs, cross_pkgs, rust_pkg, ...}:
+{
+  pkgs,
+  cross_pkgs,
+  rust_pkg,
+  ...
+}:
 cross_pkgs.mkShell {
-	nativeBuildInputs = [pkgs.ninja pkgs.cmake rust_pkg pkgs.pkg-config pkgs.alejandra ];
-	buildInputs = [cross_pkgs.windows.pthreads];
-	shellHook = "zsh";
+  nativeBuildInputs = [pkgs.ninja pkgs.cmake rust_pkg pkgs.pkg-config pkgs.alejandra];
+  buildInputs = [cross_pkgs.windows.pthreads];
+  shellHook = "zsh";
 }

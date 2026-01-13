@@ -1,7 +1,7 @@
 #include "debug.hpp"
 #include "layout.hpp"
 #include <generated/packet_.h>
-#include <net.h>
+#include <runtime.h>
 
 void layout::components::render_chat(
     Document& doc, Context& ctx, const std::vector<std::vector<uint8_t>>& packets

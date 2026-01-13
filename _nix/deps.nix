@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-let
+{pkgs, ...}: let
   fmt = pkgs.fetchFromGitHub {
     owner = "fmtlib";
     repo = "fmt";

@@ -12,8 +12,9 @@ in
   rust-platform.buildRustPackage {
     pname = "boron-server";
     version = "0.1.0";
-    src = ../server;
+    src = ../boron_rust;
+    cargoBuildFlags = ["-p" "boron_server"];
     buildInputs = [cross_pkgs.windows.pthreads];
     nativeBuildInputs = [pkgs.pkg-config];
-    cargoLock.lockFile = ../server/Cargo.lock;
+    cargoLock.lockFile = ../boron_rust/Cargo.lock;
   }
