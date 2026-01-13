@@ -23,19 +23,22 @@
         targets = ["x86_64-pc-windows-gnu"];
       };
       deps = import ./_nix/deps.nix {inherit pkgs;};
-    in rec {
-      devShells.default = import ./_nix/shell.nix {inherit pkgs cross_pkgs rust_pkg;};
-      packages.server = import ./_nix/server_pkg.nix {inherit pkgs cross_pkgs rust_pkg;};
-      packages.client_runtime = import ./_nix/client_runtime_pkg.nix {inherit pkgs cross_pkgs rust_pkg;};
-      packages.client = import ./_nix/client_pkg.nix {
-        inherit pkgs cross_pkgs deps;
-        runtime_pkg = packages.client_runtime;
+      shell = import ./_nix/shell.nix {inherit pkgs cross_pkgs rust_pkg;};
+      boron_server = import ./_nix/boron_server.nix {inherit pkgs cross_pkgs rust_pkg;};
+      client_runtime = import ./_nix/client_runtime.nix {inherit pkgs cross_pkgs rust_pkg;};
+      boron_client = import ./_nix/boron_client.nix {
+        inherit pkgs cross_pkgs deps client_runtime;
       };
-      packages.default = import ./_nix/pkg.nix {
-        inherit cross_pkgs;
-        server_pkg = packages.server;
-        client_pkg = packages.client;
+      boron = import ./_nix/boron.nix {
+        inherit cross_pkgs boron_server boron_client;
       };
+    in {
+      devShells.windows = shell.windows;
+      packages.server-windows = boron_server.windows;
+      packages.client_runtime-windows = client_runtime.windows;
+      packages.client-windows = boron_client.windows;
+      packages.windows = boron.windows;
+
       apps.setup = inputs.flake-utils.lib.mkApp {
         drv = pkgs.writeShellApplication {
           name = "setup";

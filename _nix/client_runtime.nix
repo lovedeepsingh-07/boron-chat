@@ -8,14 +8,14 @@
     cargo = rust_pkg;
     rustc = rust_pkg;
   };
-in
-  rust-platform.buildRustPackage {
+in {
+  windows = rust-platform.buildRustPackage {
     pname = "runtime";
     version = "0.1.0";
-    src = ../boron_rust;
+    src = ../rust;
     nativeBuildInputs = [pkgs.pkg-config];
     buildInputs = [cross_pkgs.windows.pthreads];
-    cargoLock.lockFile = ../boron_rust/Cargo.lock;
+    cargoLock.lockFile = ../rust/Cargo.lock;
     buildPhase = ''
       cargo build -p runtime --release --target x86_64-pc-windows-gnu
     '';
@@ -27,4 +27,5 @@ in
       cp target/x86_64-pc-windows-gnu/cxxbridge/rust/cxx.h $out/include/rust/cxx.h
     '';
     fixupPhase = "true";
-  }
+  };
+}

@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["common", "client_runtime", "server"]
+members = ["boron_common", "client_runtime", "boron_server"]
 
 [profile.release]
 debug = true

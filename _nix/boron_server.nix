@@ -8,13 +8,14 @@
     cargo = rust_pkg;
     rustc = rust_pkg;
   };
-in
-  rust-platform.buildRustPackage {
+in {
+  windows = rust-platform.buildRustPackage {
     pname = "boron-server";
     version = "0.1.0";
-    src = ../boron_rust;
+    src = ../rust;
     cargoBuildFlags = ["-p" "boron_server"];
     buildInputs = [cross_pkgs.windows.pthreads];
     nativeBuildInputs = [pkgs.pkg-config];
-    cargoLock.lockFile = ../boron_rust/Cargo.lock;
-  }
+    cargoLock.lockFile = ../rust/Cargo.lock;
+  };
+}

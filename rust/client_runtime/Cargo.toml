@@ -7,7 +7,7 @@ edition = "2024"
 crate-type = ["staticlib"]
 
 [dependencies]
-boron_common = { path = "../common" }
+boron_common = { path = "../boron_common" }
 cxx = "1.0.188"
 rand = { workspace = true }
 renet = { workspace = true }
