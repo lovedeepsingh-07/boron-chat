@@ -10,33 +10,33 @@ bool trying_to_connect = false;
 
 void layout::pages::login(Document& doc, Context& ctx) {
     if (trying_to_connect) {
-        // ------ net::connect_client() ------
+        // ------ rt::connect_client() ------
         try {
-            net::connect_client((uint64_t)GetFrameTime() * 1000.0F);
+            rt::connect_client((uint64_t)GetFrameTime() * 1000.0F);
         } catch (rust::Error e) {
             auto err = error::Error::from_rust(e);
             if (err.kind == error::Error::Kind::AuthError) {
                 debug::error(fmt::format("Failed to connect to the server, {}", err.to_string()));
                 debug::info("Try using a different username");
-                // ------ net::reset_client() ------
+                // ------ rt::reset_client() ------
                 try {
-                    net::reset_client();
+                    rt::reset_client();
                     trying_to_connect = false;
                 } catch (rust::Error e) {
                     auto err = error::Error::from_rust(e);
                     debug::error(fmt::format("Failed to reset the client state, {}", err.to_string()));
                 }
-                // ------ net::reset_client() ------
+                // ------ rt::reset_client() ------
             }
         }
-        // ------ net::connect_client() ------
-        if (net::is_client_connected()) {
+        // ------ rt::connect_client() ------
+        if (rt::is_client_connected()) {
             trying_to_connect = false;
             doc.set_curr_page("chat");
         }
-        // ------ net::send_packets() ------
+        // ------ rt::send_packets() ------
         try {
-            net::send_packets();
+            rt::send_packets();
         } catch (rust::Error e) {
             auto err = error::Error::from_rust(e);
             if (err.kind != error::Error::Kind::StateNotInitializedError) {
@@ -44,7 +44,7 @@ void layout::pages::login(Document& doc, Context& ctx) {
                 std::exit(1);
             }
         }
-        // ------ net::send_packets() ------
+        // ------ rt::send_packets() ------
     }
     CLAY(Clay_ElementDeclaration{
         .layout = { .sizing = { .width = CLAY_SIZING_GROW(), .height = CLAY_SIZING_GROW() },
@@ -77,7 +77,7 @@ void layout::pages::login(Document& doc, Context& ctx) {
                             .layoutDirection = CLAY_TOP_TO_BOTTOM } }) {
                 layout::components::login_input(doc, ctx, "username_input", "Username");
             }
-            if (layout::components::login_button(doc, ctx, "login_button", net::is_client_connecting() ? "Connecting..." : "Login")
+            if (layout::components::login_button(doc, ctx, "login_button", rt::is_client_connecting() ? "Connecting..." : "Login")
                 && !trying_to_connect) {
                 std::string username_input = app_utils::trim_whitespace(
                     doc.get_element<elements::Input>("username_input")->value
@@ -85,9 +85,9 @@ void layout::pages::login(Document& doc, Context& ctx) {
                 if (username_input.size() < 8) {
                     debug::error("Username should be atleast 8 characters long");
                 } else {
-                    // ------ net::setup_client() ------
+                    // ------ rt::setup_client() ------
                     try {
-                        net::setup_client(username_input);
+                        rt::setup_client(username_input);
                     } catch (rust::Error e) {
                         auto err = error::Error::from_rust(e);
                         if (err.kind != error::Error::Kind::StateAlreadyInitializedError) {
@@ -95,7 +95,7 @@ void layout::pages::login(Document& doc, Context& ctx) {
                             std::exit(1);
                         }
                     }
-                    // ------ net::setup_client() ------
+                    // ------ rt::setup_client() ------
                     trying_to_connect = true;
                 }
             };

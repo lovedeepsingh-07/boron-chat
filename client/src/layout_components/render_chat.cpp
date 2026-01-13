@@ -15,7 +15,7 @@ void layout::components::render_chat(
                 std::string message_username = std::string(message->username()->c_str());
                 std::string message_body = std::string(message->body()->c_str());
 
-                auto client_username = net::get_client_username();
+                auto client_username = rt::get_client_username();
                 bool outgoing_message = message_username
                     == std::string(client_username.begin(), client_username.end());
 
@@ -26,7 +26,7 @@ void layout::components::render_chat(
                 const auto* join_event = packet->data_as_JoinEvent();
                 std::string username = std::string(join_event->username()->c_str());
 
-                auto client_username = net::get_client_username();
+                auto client_username = rt::get_client_username();
                 if (username
                     != std::string(client_username.begin(), client_username.end())) {
                     layout::components::chat_event(doc, ctx, fmt::format("{} joined the server", username));
@@ -37,7 +37,7 @@ void layout::components::render_chat(
                 const auto* leave_event = packet->data_as_LeaveEvent();
                 std::string username = std::string(leave_event->username()->c_str());
 
-                auto client_username = net::get_client_username();
+                auto client_username = rt::get_client_username();
                 if (username
                     != std::string(client_username.begin(), client_username.end())) {
                     layout::components::chat_event(doc, ctx, fmt::format("{} left the server", username));

@@ -10,7 +10,7 @@ use state::*;
 use update::*;
 use message::*;
 
-#[cxx::bridge(namespace = "net")]
+#[cxx::bridge(namespace = "rt")]
 pub mod ffi {
     struct MessageBytes {
         pub data: Vec<u8>,

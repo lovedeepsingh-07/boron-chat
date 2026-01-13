@@ -2,23 +2,34 @@ cmake_minimum_required(VERSION 3.15)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_BUILD_TYPE "Debug")
+set(CMAKE_BUILD_TYPE "Release")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project("boron")
 
+option(NIX_BUILD "Building inside nix" OFF)
+
 set(EXTERNAL_DIR deps)
 add_subdirectory(${EXTERNAL_DIR}/fmt)
-add_subdirectory(net ${CMAKE_BINARY_DIR}/net)
 add_subdirectory(${EXTERNAL_DIR}/raylib)
 
-# ------ boron_client ------
+if (${NIX_BUILD})
+	add_library(runtime STATIC IMPORTED GLOBAL)
+	set_target_properties(runtime PROPERTIES
+	  IMPORTED_LOCATION ${RUNTIME_LIB}
+	  INTERFACE_INCLUDE_DIRECTORIES ${RUNTIME_INCLUDE_DIR}
+	)
+	target_sources(runtime INTERFACE ${RUNTIME_SRC})
+else()
+	add_subdirectory(runtime ${CMAKE_BINARY_DIR}/runtime)
+endif()
+
 set(INCLUDE_FILES include)
 file(GLOB_RECURSE SRC_FILES src/*.cpp)
 add_executable(${PROJECT_NAME}_client ${SRC_FILES})
 target_link_libraries(${PROJECT_NAME}_client PRIVATE
 	raylib
-	net
+	runtime
 	fmt::fmt
 )
 target_include_directories(${PROJECT_NAME}_client PRIVATE

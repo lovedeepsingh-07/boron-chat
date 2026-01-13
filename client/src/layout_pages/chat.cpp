@@ -8,18 +8,18 @@
 std::vector<std::vector<uint8_t>> packets;
 
 void layout::pages::chat(Document& doc, Context& ctx) {
-    // ------ net::update ------
+    // ------ rt::update ------
     try {
-        net::update_client((uint64_t)GetFrameTime() * 1000);
+        rt::update_client((uint64_t)GetFrameTime() * 1000);
     } catch (rust::Error e) {
         auto err = error::Error::from_rust(e);
         debug::error(fmt::format("Failed to update the client, {}", err.to_string()));
         std::exit(1);
     }
-    // ------ net::update ------
-    // ------ net::poll_packets ------
+    // ------ rt::update ------
+    // ------ rt::poll_packets ------
     try {
-        for (auto curr_packet : net::poll_packets()) {
+        for (auto curr_packet : rt::poll_packets()) {
             packets.emplace_back(
                 std::vector(curr_packet.data.begin(), curr_packet.data.end())
             );
@@ -29,7 +29,7 @@ void layout::pages::chat(Document& doc, Context& ctx) {
         debug::error(fmt::format("Failed to poll packets, {}", err.to_string()));
         std::exit(1);
     }
-    // ------ net::poll_packets ------
+    // ------ rt::poll_packets ------
 
     CLAY(Clay_ElementDeclaration{
         .layout = { .sizing = { .width = CLAY_SIZING_GROW(), .height = CLAY_SIZING_GROW() },
@@ -59,7 +59,7 @@ void layout::pages::chat(Document& doc, Context& ctx) {
                         app_utils::trim_whitespace(message_element->value);
                     if (message_input.size() != 0) {
                         try {
-                            net::send_message(message_input);
+                            rt::send_message(message_input);
                             message_element->value = "";
                         } catch (rust::Error e) {
                             auto err = error::Error::from_rust(e);
@@ -72,13 +72,13 @@ void layout::pages::chat(Document& doc, Context& ctx) {
         }
     }
 
-    // ------ net::send_packets ------
+    // ------ rt::send_packets ------
     try {
-        net::send_packets();
+        rt::send_packets();
     } catch (rust::Error e) {
         auto err = error::Error::from_rust(e);
         debug::error(fmt::format("Failed to send packets to the server, {}", err.to_string()));
         std::exit(1);
     }
-    // ------ net::send_packets ------
+    // ------ rt::send_packets ------
 }

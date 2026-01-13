@@ -97,16 +97,18 @@ int main() {
         UnloadFont(curr_font);
     }
 
-    // ------ net::disconnect_client ------
+    // ------ rt::disconnect_client ------
     try {
-        net::disconnect_client();
-        net::update_client((uint64_t)GetFrameTime() * 1000);
-        net::send_packets();
+        rt::disconnect_client();
+        rt::update_client((uint64_t)GetFrameTime() * 1000);
+        rt::send_packets();
     } catch (rust::Error e) {
         auto err = error::Error::from_rust(e);
-        debug::error(fmt::format("Failed to disconnect the client, {}", err.to_string()));
+        if (err.kind != error::Error::Kind::StateNotInitializedError) {
+            debug::error(fmt::format("Failed to disconnect the client, {}", err.to_string()));
+        }
     }
-    // ------ net::disconnect_client ------
+    // ------ rt::disconnect_client ------
 
     return 0;
 }

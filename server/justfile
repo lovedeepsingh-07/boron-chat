@@ -1,8 +1,8 @@
 build:
-	@cargo build
+	@cargo build --release
 
 run: build
-	@./target/x86_64-pc-windows-gnu/debug/boron_server.exe
+	@./target/x86_64-pc-windows-gnu/release/boron_server.exe
 
 runw: build
-	@wine ./target/x86_64-pc-windows-gnu/debug/boron_server.exe
+	@wine ./target/x86_64-pc-windows-gnu/release/boron_server.exe
