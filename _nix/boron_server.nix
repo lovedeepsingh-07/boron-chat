@@ -1,21 +1,20 @@
-{
-  pkgs,
-  cross_pkgs,
-  rust_pkg,
-  ...
-}: let
-  rust-platform = cross_pkgs.makeRustPlatform {
-    cargo = rust_pkg;
-    rustc = rust_pkg;
-  };
-in {
-  windows = rust-platform.buildRustPackage {
-    pname = "boron-server";
+{ctx, ...}: {
+  windows = ctx.rust_platform.windows.buildRustPackage {
+    pname = "boron_server";
     version = "0.1.0";
     src = ../rust;
     cargoBuildFlags = ["-p" "boron_server"];
-    buildInputs = [cross_pkgs.windows.pthreads];
-    nativeBuildInputs = [pkgs.pkg-config];
+    buildInputs = [ctx.cross_pkgs.windows.pthreads];
+    nativeBuildInputs = [ctx.pkgs.pkg-config];
+    cargoLock.lockFile = ../rust/Cargo.lock;
+  };
+  linux = ctx.rust_platform.linux.buildRustPackage {
+    pname = "boron_server";
+    version = "0.1.0";
+    src = ../rust;
+    cargoBuildFlags = ["-p" "boron_server"];
+    buildInputs = [];
+    nativeBuildInputs = [ctx.pkgs.pkg-config];
     cargoLock.lockFile = ../rust/Cargo.lock;
   };
 }

@@ -4,7 +4,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-project("runtime")
+project("client_runtime")
 
 # cargo build
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -33,18 +33,18 @@ file(GLOB_RECURSE CARGO_SRC_FILES
 )
 
 # runtime source files
-set(RUNTIME_CXX "${CMAKE_BINARY_DIR}/runtime.cpp")
-set(RUNTIME_H "${CMAKE_BINARY_DIR}/runtime.h")
-set(RUNTIME_LIB "${CARGO_BUILD_DIR}/${CARGO_PROFILE_DIR}/libruntime.a")
+set(CLIENT_RUNTIME_CXX "${CMAKE_BINARY_DIR}/client_runtime.cpp")
+set(CLIENT_RUNTIME_H "${CMAKE_BINARY_DIR}/client_runtime.h")
+set(CLIENT_RUNTIME_LIB "${CARGO_BUILD_DIR}/${CARGO_PROFILE_DIR}/libclient_runtime.a")
 set(CXX_H "${CMAKE_BINARY_DIR}/rust/cxx.h")
 
 # cargo build command
 add_custom_command(
-	OUTPUT ${RUNTIME_CXX} ${RUNTIME_H} ${RUNTIME_LIB}
+	OUTPUT ${CLIENT_RUNTIME_CXX} ${CLIENT_RUNTIME_H} ${CLIENT_RUNTIME_LIB}
 	COMMAND CARGO_TARGET_DIR=${CARGO_BUILD_DIR} RUSTFLAGS="${RUST_FLAGS}" ${CARGO_CMD}
 
-	COMMAND cp ${CARGO_BUILD_DIR}/cxxbridge/runtime/src/lib.rs.cc ${RUNTIME_CXX}
-	COMMAND cp ${CARGO_BUILD_DIR}/cxxbridge/runtime/src/lib.rs.h ${RUNTIME_H}
+	COMMAND cp ${CARGO_BUILD_DIR}/cxxbridge/client_runtime/src/lib.rs.cc ${CLIENT_RUNTIME_CXX}
+	COMMAND cp ${CARGO_BUILD_DIR}/cxxbridge/client_runtime/src/lib.rs.h ${CLIENT_RUNTIME_H}
 	COMMAND mkdir -p ${CMAKE_BINARY_DIR}/rust
 	COMMAND cp -r ${CARGO_BUILD_DIR}/cxxbridge/rust/cxx.h ${CXX_H}
 
@@ -52,16 +52,16 @@ add_custom_command(
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-# c++ runtime library
-add_library(runtime STATIC ${RUNTIME_CXX})
-target_link_libraries(runtime PUBLIC ${RUNTIME_LIB})
-target_include_directories(runtime PUBLIC
+# c++ client_runtime library
+add_library(client_runtime STATIC ${CLIENT_RUNTIME_CXX})
+target_link_libraries(client_runtime PUBLIC ${CLIENT_RUNTIME_LIB})
+target_include_directories(client_runtime PUBLIC
 	${CMAKE_BINARY_DIR}
 )
 
 # cross-compilation
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    target_link_libraries(runtime PUBLIC
+    target_link_libraries(client_runtime PUBLIC
         ws2_32
         userenv
         advapi32
