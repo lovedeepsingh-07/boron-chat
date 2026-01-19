@@ -1,13 +1,14 @@
-BINARY_NAME := "boron"
-TOOLCHAIN_FILE := env_var('PWD') + "/.cmake/mingw-w64-toolchain.cmake"
+WINDOWS_FLAGS := "-DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++"
+
+setup:
+	nix run .#setup
 
 build:
-	@mkdir -p build/windows
-	@cmake -G Ninja -S . -B build/windows -DCMAKE_TOOLCHAIN_FILE={{TOOLCHAIN_FILE}} -DCMAKE_SYSTEM_NAME=Windows
-	@cmake --build ./build/windows
-	@cp build/windows/compile_commands.json build/compile_commands.json
+	@mkdir -p build
+	@cmake -G Ninja -S . -B build -DCMAKE_BUILD_TYPE=Debug
+	@cmake --build ./build
 
 run: build
-	@./build/windows/boron_client.exe
+	@./build/boron_client
 runw: build
-	@wine ./build/windows/boron_client.exe
+	@wine ./build/boron_client.exe

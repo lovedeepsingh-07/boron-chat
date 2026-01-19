@@ -13,14 +13,14 @@ add_subdirectory(${EXTERNAL_DIR}/fmt)
 add_subdirectory(${EXTERNAL_DIR}/raylib)
 
 if (${NIX_BUILD})
-	add_library(runtime STATIC IMPORTED GLOBAL)
-	set_target_properties(runtime PROPERTIES
-	  IMPORTED_LOCATION ${RUNTIME_LIB}
-	  INTERFACE_INCLUDE_DIRECTORIES ${RUNTIME_INCLUDE_DIR}
+	add_library(client_runtime STATIC IMPORTED GLOBAL)
+	set_target_properties(client_runtime PROPERTIES
+		IMPORTED_LOCATION ${CLIENT_RUNTIME_LIB}
+		INTERFACE_INCLUDE_DIRECTORIES ${CLIENT_RUNTIME_INCLUDE_DIR}
 	)
-	target_sources(runtime INTERFACE ${RUNTIME_SRC})
+	target_sources(client_runtime INTERFACE ${CLIENT_RUNTIME_SRC})
 	if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
-		target_link_libraries(runtime INTERFACE
+		target_link_libraries(client_runtime INTERFACE
 			ws2_32
 			userenv
 			advapi32
@@ -28,7 +28,7 @@ if (${NIX_BUILD})
 		)
 	endif()
 else()
-	add_subdirectory(../boron_rust/client_runtime ${CMAKE_BINARY_DIR}/runtime)
+	add_subdirectory(../rust/client_runtime ${CMAKE_BINARY_DIR}/client_runtime)
 endif()
 
 set(INCLUDE_FILES include)
@@ -36,7 +36,7 @@ file(GLOB_RECURSE SRC_FILES src/*.cpp)
 add_executable(${PROJECT_NAME}_client ${SRC_FILES})
 target_link_libraries(${PROJECT_NAME}_client PRIVATE
 	raylib
-	runtime
+	client_runtime
 	fmt::fmt
 )
 target_include_directories(${PROJECT_NAME}_client PRIVATE
