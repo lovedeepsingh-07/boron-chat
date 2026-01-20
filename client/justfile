@@ -1,5 +1,3 @@
-WINDOWS_FLAGS := "-DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++"
-
 setup:
 	nix run .#setup
 
@@ -10,5 +8,3 @@ build:
 
 run: build
 	@./build/boron_client
-runw: build
-	@wine ./build/boron_client.exe
