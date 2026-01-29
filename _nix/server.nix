@@ -1,14 +1,18 @@
 {
   pkgs,
   rust_platform,
+  version,
   ...
-}:
-rust_platform.buildRustPackage {
-  pname = "boron_server";
-  version = "0.1.0";
-  src = ../rust;
-  cargoBuildFlags = ["-p" "boron_server"];
-  buildInputs = [];
-  nativeBuildInputs = [pkgs.pkg-config];
-  cargoLock.lockFile = ../rust/Cargo.lock;
-}
+}: let
+  crate_toml = builtins.fromTOML (builtins.readFile ../rust/boron_server/Cargo.toml);
+  package_name = crate_toml.package.name;
+in
+  rust_platform.buildRustPackage {
+    pname = package_name;
+    inherit version;
+    src = ../rust;
+    cargoBuildFlags = ["-p" "boron_server"];
+    buildInputs = [];
+    nativeBuildInputs = [pkgs.pkg-config];
+    cargoLock.lockFile = ../rust/Cargo.lock;
+  }

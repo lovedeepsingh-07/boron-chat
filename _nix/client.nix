@@ -1,6 +1,7 @@
 {
   pkgs,
   deps,
+  version,
   client_runtime,
   ...
 }: let
@@ -8,7 +9,7 @@
 in
   pkgs.stdenv.mkDerivation {
     pname = "boron_client";
-    version = "0.1.0";
+    inherit version;
     src = ../client;
     nativeBuildInputs = [
       pkgs.ninja

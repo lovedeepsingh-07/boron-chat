@@ -1,15 +1,15 @@
 [package]
 name = "boron_server"
-version = "0.1.0"
-edition = "2024"
+version.workspace = true
+edition.workspace = true
 
 [dependencies]
 axum = { version = "0.8.7", features = ["macros"] }
 boron_common = { path = "../boron_common" }
 crossbeam = { version = "0.8.4", features = ["crossbeam-channel"] }
-rand = { workspace = true }
-renet = { workspace = true }
-renet_netcode = { workspace = true }
-serde = { workspace = true }
-serde_json = { workspace = true }
+rand.workspace = true
+renet.workspace = true
+renet_netcode.workspace = true
+serde.workspace = true
+serde_json.workspace = true
 tokio = { version = "1.48.0", features = ["full"] }

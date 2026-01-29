@@ -18,11 +18,13 @@
         inherit system;
         overlays = [(import inputs.rust_overlay) inputs.nixgl.overlay];
       };
+      package_name = "boron";
+      version = (builtins.fromTOML (builtins.readFile ./rust/Cargo.toml)).workspace.package.version;
       rust_pkg = pkgs.rust-bin.stable."1.88.0".default;
       deps = import ./_nix/deps.nix {inherit pkgs;};
     in {
       devShells = import ./_nix/shell.nix {inherit pkgs rust_pkg;};
-      packages = import ./_nix/pkg.nix {inherit pkgs rust_pkg deps;};
+      packages = import ./_nix/pkg.nix {inherit pkgs rust_pkg deps package_name version;};
 
       apps.setup = inputs.flake-utils.lib.mkApp {
         drv = pkgs.writeShellApplication {

@@ -1,7 +1,7 @@
 [package]
 name = "client_runtime"
-version = "0.1.0"
-edition = "2024"
+version.workspace = true
+edition.workspace = true
 
 [lib]
 crate-type = ["staticlib"]
@@ -9,11 +9,11 @@ crate-type = ["staticlib"]
 [dependencies]
 boron_common = { path = "../boron_common" }
 cxx = "1.0.188"
-rand = { workspace = true }
-renet = { workspace = true }
-renet_netcode = { workspace = true }
-serde = { workspace = true }
-serde_json = { workspace = true }
+rand.workspace = true
+renet.workspace = true
+renet_netcode.workspace = true
+serde.workspace = true
+serde_json.workspace = true
 ureq = { version = "3.1.4", features = ["json"] }
 
 [build-dependencies]
