@@ -2,6 +2,10 @@
 resolver = "3"
 members = ["boron_common", "client_runtime", "boron_server"]
 
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+
 [profile.release]
 debug = true
 panic = "abort"

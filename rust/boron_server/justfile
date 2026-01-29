@@ -1,14 +1,5 @@
-DEV_PLATFORM := env("DEV_PLATFORM") # this environment variable is supplied by the nix shell
-CARGO_TARGET := if DEV_PLATFORM == "LINUX" {
-	"x86_64-unknown-linux-gnu"
-} else if DEV_PLATFORM == "WINDOWS" {
-	"x86_64-pc-windows-gnu"
-} else { "UNKNOWN" }
-
 build:
-	@cargo build --target {{CARGO_TARGET}}
+	@cargo build
 
-run: build
-	@../target/{{CARGO_TARGET}}/debug/boron_server
-runw: build
-	@wine ../target/{{CARGO_TARGET}}/debug/boron_server.exe
+run:
+	@cargo run
